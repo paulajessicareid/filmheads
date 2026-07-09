@@ -27,6 +27,8 @@ export const actions: Actions = {
 		const formData = await event.request.formData();
 		const title = formData.get('title')?.toString().trim() ?? '';
 		const listType = formData.get('listType')?.toString() as ListType;
+		const tmdbIdRaw = formData.get('tmdbId')?.toString().trim() ?? '';
+		const posterPathRaw = formData.get('posterPath')?.toString().trim() ?? '';
 
 		if (!title) {
 			return fail(400, { message: 'Title is required' });
@@ -36,7 +38,17 @@ export const actions: Actions = {
 			return fail(400, { message: 'Invalid list type' });
 		}
 
-		await addMovie(event.locals.user.id, title, listType);
+		const tmdbId = Number.parseInt(tmdbIdRaw, 10);
+		if (!Number.isInteger(tmdbId) || tmdbId <= 0) {
+			return fail(400, { message: 'Select a movie from the search results' });
+		}
+
+		const posterPath = posterPathRaw || null;
+		if (posterPath && !posterPath.startsWith('https://image.tmdb.org/')) {
+			return fail(400, { message: 'Invalid poster URL' });
+		}
+
+		await addMovie(event.locals.user.id, title, listType, tmdbId, posterPath);
 
 		return { success: true };
 	},

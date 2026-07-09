@@ -17,6 +17,12 @@ export async function getMoviesByUser(userId: string) {
 	};
 }
 
-export async function addMovie(userId: string, title: string, listType: ListType) {
-	await db.insert(movieListItem).values({ userId, title, listType });
+export async function addMovie(
+	userId: string,
+	title: string,
+	listType: ListType,
+	tmdbId: number,
+	posterPath: string | null
+) {
+	await db.insert(movieListItem).values({ userId, title, listType, tmdbId, posterPath });
 }

@@ -1,6 +1,6 @@
 {
-  "id": "4f8b2085-3909-4205-8c7a-0420b594620b",
-  "prevId": "9b1b2020-ecb6-4d38-b79d-4a72700ffe47",
+  "id": "8fe35231-1b3d-46bc-9bce-586172504b81",
+  "prevId": "4f8b2085-3909-4205-8c7a-0420b594620b",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -31,6 +31,18 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "tmdb_id": {
+          "name": "tmdb_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "poster_path": {
+          "name": "poster_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "created_at": {
           "name": "created_at",
