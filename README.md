@@ -1,42 +1,44 @@
-# sv
+# Filmheads
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
-
-```sh
-# recreate this project
-pnpm dlx sv@0.16.2 create --template minimal --types ts --add prettier eslint vitest="usages:unit,component" playwright drizzle="database:postgresql+postgresql:postgres.js+docker:yes" sveltekit-adapter="adapter:netlify" better-auth="demo:password" --install pnpm .
-```
+A simple app for tracking movies you want to watch and movies you've watched.
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+```sh
+pnpm install
+pnpm dev
+```
+
+## Database
+
+Local development connects to the shared live database via `DATABASE_URL` in `.env`. **Always use migrations — never `drizzle-kit push`.**
+
+When you change the schema in `src/lib/server/db/schema.ts`:
 
 ```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm db:generate   # create a new migration in drizzle/
+pnpm db:migrate    # apply pending migrations
 ```
+
+Other database commands:
+
+```sh
+pnpm db:studio     # open Drizzle Studio
+```
+
+`pnpm db:start` starts a local Docker Postgres instance (from the original scaffold). It is optional and not used when `DATABASE_URL` points at the live database.
+
+## Environment
+
+Copy `.env.example` to `.env` and set:
+
+- `DATABASE_URL` — PostgreSQL connection string
+- `ORIGIN` — app URL (e.g. `http://localhost:5173`)
+- `BETTER_AUTH_SECRET` — 32+ character secret
 
 ## Building
 
-To create a production version of your app:
-
 ```sh
-npm run build
+pnpm build
+pnpm preview
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
