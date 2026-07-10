@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import type { ActionData } from './$types';
+	import type { ActionData, PageData } from './$types';
 
-	let { form }: { form: ActionData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
 <div class="card">
@@ -40,6 +40,25 @@
 				Password
 				<input type="password" name="password" required />
 			</label>
+			<label>
+				Country
+				<select name="country">
+					<option value="">Select a country (optional)</option>
+					{#each data.countries as country (country.code)}
+						<option value={country.code}>{country.name}</option>
+					{/each}
+				</select>
+			</label>
+			<label>
+				Language
+				<select name="language">
+					<option value="">Select a language (optional)</option>
+					{#each data.commonLanguages as language (language.code)}
+						<option value={language.code}>{language.name}</option>
+					{/each}
+				</select>
+			</label>
+			<p class="form-note">You can add more countries and languages later in your profile.</p>
 			<button type="submit" class="btn-primary">Create account</button>
 		</form>
 	</div>

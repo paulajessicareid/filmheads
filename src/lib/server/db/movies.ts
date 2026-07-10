@@ -1,4 +1,4 @@
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { db } from './index';
 import { movieListItem } from './schema';
 
@@ -22,7 +22,17 @@ export async function addMovie(
 	title: string,
 	listType: ListType,
 	tmdbId: number,
-	posterPath: string | null
+	posterPath: string | null,
+	genres: string | null,
+	director: string | null
 ) {
-	await db.insert(movieListItem).values({ userId, title, listType, tmdbId, posterPath });
+	await db
+		.insert(movieListItem)
+		.values({ userId, title, listType, tmdbId, posterPath, genres, director });
+}
+
+export async function removeMovie(userId: string, movieId: number) {
+	await db
+		.delete(movieListItem)
+		.where(and(eq(movieListItem.id, movieId), eq(movieListItem.userId, userId)));
 }

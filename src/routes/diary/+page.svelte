@@ -6,8 +6,9 @@
 </script>
 
 <MovieListPage
-	title="Watchlist"
-	movies={data.wantToWatch}
-	listType="want_to_watch"
+	title="Your film diary"
+	movies={data.watched}
+	listType="watched"
 	message={form?.message}
+	emptyMessage="No watched movies yet"
 />

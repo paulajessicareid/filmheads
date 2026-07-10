@@ -9,7 +9,7 @@ export const load: PageServerLoad = async (event) => {
 	const lists = await getMoviesByUser(user.id);
 
 	return {
-		wantToWatch: lists.wantToWatch
+		watched: lists.watched
 	};
 };
 
