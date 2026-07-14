@@ -6,7 +6,7 @@
 </script>
 
 <MovieListPage
-	title="Your film diary"
+	title="Film diary"
 	movies={data.watched}
 	listType="watched"
 	message={form?.message}

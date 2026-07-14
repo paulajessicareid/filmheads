@@ -6,7 +6,7 @@
 
 <div class="container">
 	<section class="content-section">
-		<h2>Your FH recs</h2>
+		<h2>FH recs</h2>
 
 		{#if data.error}
 			<p class="empty">{data.error}</p>

@@ -3,8 +3,8 @@
 	import { resolve } from '$app/paths';
 
 	const links = [
-		{ href: '/diary', label: 'Your film diary' },
-		{ href: '/recs', label: 'Your FH recs' },
+		{ href: '/diary', label: 'Film diary' },
+		{ href: '/recs', label: 'FH recs' },
 		{ href: '/', label: 'Watchlist' },
 		{ href: '/about', label: 'About' }
 	] as const;
