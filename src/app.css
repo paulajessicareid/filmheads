@@ -791,6 +791,39 @@ button.btn-card-overlay.active {
 	text-align: left;
 }
 
+.rec-card-cta-form {
+	margin-top: 0.75rem;
+}
+
+.rec-card-cta {
+	width: 100%;
+	padding: 0.5rem 1rem;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	color: #2a6041;
+	background: transparent;
+	border: 1.5px solid #2a6041;
+	border-radius: 6px;
+	cursor: pointer;
+	transition:
+		background 0.15s,
+		color 0.15s,
+		border-color 0.15s;
+}
+
+.rec-card-cta:hover {
+	background: #2a6041;
+	color: #fff;
+}
+
+.rec-card-cta-added {
+	display: block;
+	text-align: center;
+	color: #93c5a8;
+	border-color: #93c5a8;
+	cursor: default;
+}
+
 @media (max-width: 720px) {
 	.recs-layout {
 		grid-template-columns: repeat(2, minmax(0, 1fr));

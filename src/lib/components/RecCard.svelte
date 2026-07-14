@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
+
 	type Recommendation = {
+		tmdbId: number | null;
 		title: string;
 		posterPath: string | null;
 		genres: string | null;
@@ -12,6 +15,7 @@
 	};
 
 	let { recommendation }: { recommendation: Recommendation } = $props();
+	let added = $state(false);
 </script>
 
 <article class="rec-card">
@@ -45,6 +49,32 @@
 
 		{#if recommendation.funFact}
 			<p class="rec-card-fun-fact">{recommendation.funFact}</p>
+		{/if}
+
+		{#if recommendation.tmdbId}
+			{#if added}
+				<div class="rec-card-cta-form">
+					<span class="rec-card-cta rec-card-cta-added">On your Watchlist</span>
+				</div>
+			{:else}
+				<form
+					method="post"
+					action="?/addMovie"
+					use:enhance={() => {
+						return async ({ update }) => {
+							added = true;
+							await update({ invalidateAll: false });
+						};
+					}}
+					class="rec-card-cta-form"
+				>
+					<input type="hidden" name="title" value={recommendation.title} />
+					<input type="hidden" name="listType" value="want_to_watch" />
+					<input type="hidden" name="tmdbId" value={recommendation.tmdbId} />
+					<input type="hidden" name="posterPath" value={recommendation.posterPath ?? ''} />
+					<button type="submit" class="rec-card-cta">Add to Watchlist</button>
+				</form>
+			{/if}
 		{/if}
 	</div>
 </article>

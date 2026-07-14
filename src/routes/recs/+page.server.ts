@@ -1,6 +1,7 @@
-import type { PageServerLoad } from './$types';
+import type { Actions, PageServerLoad } from './$types';
 import { requireUser } from '$lib/server/auth-guard';
 import { getRecommendationsForUser } from '$lib/server/recommendations';
+import { addMovieAction } from '$lib/server/actions/add-movie';
 
 export const load: PageServerLoad = async (event) => {
 	const user = requireUser(event);
@@ -15,4 +16,8 @@ export const load: PageServerLoad = async (event) => {
 			error: err instanceof Error ? err.message : 'Failed to generate recommendations'
 		};
 	}
+};
+
+export const actions: Actions = {
+	addMovie: addMovieAction
 };
