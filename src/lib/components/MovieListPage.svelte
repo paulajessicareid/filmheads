@@ -13,6 +13,7 @@
 		posterPath: string | null;
 		genres: string | null;
 		director: string | null;
+		favourite: boolean;
 	};
 
 	type SearchResult = {
@@ -36,6 +37,27 @@
 		emptyMessage?: string;
 	} = $props();
 
+	const GENRES = [
+		'Action',
+		'Adventure',
+		'Animation',
+		'Comedy',
+		'Crime',
+		'Documentary',
+		'Drama',
+		'Family',
+		'Fantasy',
+		'History',
+		'Horror',
+		'Music',
+		'Mystery',
+		'Romance',
+		'Science Fiction',
+		'Thriller',
+		'War',
+		'Western'
+	];
+
 	let query = $state('');
 	let results = $state<SearchResult[]>([]);
 	let searching = $state(false);
@@ -44,10 +66,17 @@
 	let selectedTmdbId = $state('');
 	let selectedPosterPath = $state('');
 	let viewMode = $state<ViewMode>('list');
+	let selectedGenre = $state('');
 	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 	let formEl: HTMLFormElement | undefined;
 
 	const viewStorageKey = $derived(`filmheads-view-${listType}`);
+
+	const filteredMovies = $derived(
+		selectedGenre
+			? movies.filter((m) => m.genres?.split(', ').includes(selectedGenre))
+			: movies
+	);
 
 	$effect(() => {
 		if (!browser) return;
@@ -174,8 +203,20 @@
 
 	<section class="movies-section">
 		<div class="movies-toolbar">
+			<select
+				class="genre-filter"
+				bind:value={selectedGenre}
+				aria-label="Filter by genre"
+			>
+				<option value="">All Genres</option>
+				{#each GENRES as genre}
+					<option value={genre}>{genre}</option>
+				{/each}
+			</select>
+		</div>
+		<div class="movies-toolbar">
 			<span class="movies-count">
-				{movies.length} {movies.length === 1 ? 'movie' : 'movies'}
+				{filteredMovies.length} {filteredMovies.length === 1 ? 'movie' : 'movies'}
 			</span>
 			<div class="view-toggle" role="group" aria-label="View mode">
 				<button
@@ -237,16 +278,18 @@
 
 		{#if movies.length === 0}
 			<p class="empty">{emptyMessage}</p>
+		{:else if filteredMovies.length === 0}
+			<p class="empty">No movies match this genre</p>
 		{:else if viewMode === 'list'}
 			<ul class="movie-list">
-				{#each movies as movie (movie.id)}
-					<MovieListRow {movie} />
+				{#each filteredMovies as movie (movie.id)}
+					<MovieListRow {movie} {listType} />
 				{/each}
 			</ul>
 		{:else}
 			<ul class="movie-card-grid">
-				{#each movies as movie (movie.id)}
-					<MovieCard {movie} />
+				{#each filteredMovies as movie (movie.id)}
+					<MovieCard {movie} {listType} />
 				{/each}
 			</ul>
 		{/if}

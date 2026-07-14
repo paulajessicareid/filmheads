@@ -9,7 +9,7 @@ export async function getMoviesByUser(userId: string) {
 		.select()
 		.from(movieListItem)
 		.where(eq(movieListItem.userId, userId))
-		.orderBy(desc(movieListItem.createdAt));
+		.orderBy(desc(movieListItem.favourite), desc(movieListItem.createdAt));
 
 	return {
 		wantToWatch: items.filter((item) => item.listType === 'want_to_watch'),
@@ -34,5 +34,19 @@ export async function addMovie(
 export async function removeMovie(userId: string, movieId: number) {
 	await db
 		.delete(movieListItem)
+		.where(and(eq(movieListItem.id, movieId), eq(movieListItem.userId, userId)));
+}
+
+export async function toggleFavourite(userId: string, movieId: number) {
+	const [item] = await db
+		.select({ favourite: movieListItem.favourite })
+		.from(movieListItem)
+		.where(and(eq(movieListItem.id, movieId), eq(movieListItem.userId, userId)));
+
+	if (!item) return;
+
+	await db
+		.update(movieListItem)
+		.set({ favourite: !item.favourite })
 		.where(and(eq(movieListItem.id, movieId), eq(movieListItem.userId, userId)));
 }

@@ -1,0 +1,1 @@
+ALTER TABLE "movie_list_item" ADD COLUMN "favourite" boolean DEFAULT false NOT NULL;

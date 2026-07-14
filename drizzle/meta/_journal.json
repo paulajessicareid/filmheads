@@ -43,6 +43,13 @@
       "when": 1783685987823,
       "tag": "0005_unusual_hammerhead",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1784036111657,
+      "tag": "0006_certain_sprite",
+      "breakpoints": true
     }
   ]
 }
