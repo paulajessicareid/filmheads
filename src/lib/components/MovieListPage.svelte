@@ -3,6 +3,8 @@
 	import { enhance } from '$app/forms';
 	import MovieCard from '$lib/components/MovieCard.svelte';
 	import MovieListRow from '$lib/components/MovieListRow.svelte';
+	import PageHeader from '$lib/components/PageHeader.svelte';
+	import { GENRES } from '$lib/data/genres';
 	import type { ListType } from '$lib/server/db/movies';
 
 	type ViewMode = 'list' | 'card';
@@ -25,38 +27,19 @@
 
 	let {
 		title,
+		subtitle,
 		movies,
 		listType,
 		message,
 		emptyMessage = 'No movies yet'
 	}: {
 		title: string;
+		subtitle: string;
 		movies: Movie[];
 		listType: ListType;
 		message?: string;
 		emptyMessage?: string;
 	} = $props();
-
-	const GENRES = [
-		'Action',
-		'Adventure',
-		'Animation',
-		'Comedy',
-		'Crime',
-		'Documentary',
-		'Drama',
-		'Family',
-		'Fantasy',
-		'History',
-		'Horror',
-		'Music',
-		'Mystery',
-		'Romance',
-		'Science Fiction',
-		'Thriller',
-		'War',
-		'Western'
-	];
 
 	let query = $state('');
 	let results = $state<SearchResult[]>([]);
@@ -137,9 +120,10 @@
 	}
 </script>
 
+<PageHeader {title} {subtitle} />
+
 <div class="container">
 	<section class="search-section">
-		<h2>{title}</h2>
 		<form
 			method="post"
 			action="?/addMovie"

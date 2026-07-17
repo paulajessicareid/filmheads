@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import { getCountryName } from '$lib/data/countries';
 	import { getLanguageName } from '$lib/data/languages';
 	import type { PageData } from './$types';
@@ -12,13 +13,68 @@
 	const availableLanguages = $derived(
 		data.languages.filter((language) => !data.preferences.languages.includes(language.code))
 	);
+	const availableGenres = $derived(
+		data.genres.filter((genre) => !data.preferences.genres.includes(genre))
+	);
+	const atMaxGenres = $derived(data.preferences.genres.length >= 4);
 </script>
+
+<PageHeader
+	title="Your details"
+	subtitle="Manage your profile and recommendation preferences."
+/>
 
 <div class="container">
 	<section class="content-section">
-		<h2>Your details</h2>
 		<p><strong>Name:</strong> {data.user.name}</p>
 		<p><strong>Email:</strong> {data.user.email}</p>
+	</section>
+
+	<section class="content-section">
+		<h2>Genres</h2>
+		<p class="form-note">You can pick up to 4 genres to help steer your FH reccs.</p>
+		{#if data.preferences.genres.length === 0}
+			<p class="empty">No genres added yet.</p>
+		{:else}
+			<ul class="preference-list">
+				{#each data.preferences.genres as genre (genre)}
+					<li>
+						<span>{genre}</span>
+						<form method="post" action="?/removeGenre" use:enhance>
+							<input type="hidden" name="genre" value={genre} />
+							<button type="submit" class="btn-remove">Remove</button>
+						</form>
+					</li>
+				{/each}
+			</ul>
+		{/if}
+
+		<form method="post" action="?/addGenre" class="add-preference-form" use:enhance>
+			<label>
+				Add genre
+				<select name="genre" required disabled={availableGenres.length === 0 || atMaxGenres}>
+					<option value="">
+						{#if atMaxGenres}
+							Maximum of 4 genres reached
+						{:else if availableGenres.length === 0}
+							All genres added
+						{:else}
+							Select a genre
+						{/if}
+					</option>
+					{#each availableGenres as genre (genre)}
+						<option value={genre}>{genre}</option>
+					{/each}
+				</select>
+			</label>
+			<button
+				type="submit"
+				class="btn-primary"
+				disabled={availableGenres.length === 0 || atMaxGenres}
+			>
+				Add
+			</button>
+		</form>
 	</section>
 
 	<section class="content-section">

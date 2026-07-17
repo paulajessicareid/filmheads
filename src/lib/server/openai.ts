@@ -45,6 +45,7 @@ function buildPrompt(context: RecommendationContext): string {
 
 	const countryNames = prefs.countries.map(getCountryName).join(', ') || 'Not specified';
 	const languageNames = prefs.languages.map(getLanguageName).join(', ') || 'Not specified';
+	const genreNames = prefs.genres.join(', ') || 'Not specified';
 
 	return `You are a film curator for Filmheads, an app that helps people discover foreign films.
 
@@ -56,6 +57,7 @@ ${formatMovieList(movies.wantToWatch)}
 User diary (already watched):
 ${formatMovieList(movies.watched)}
 
+User's preferred genres: ${genreNames}
 User's preferred countries of interest: ${countryNames}
 User's preferred languages: ${languageNames}
 

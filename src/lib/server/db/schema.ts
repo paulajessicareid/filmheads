@@ -27,6 +27,19 @@ export const userLanguage = pgTable(
 	(table) => [unique().on(table.userId, table.languageCode)]
 );
 
+export const userGenre = pgTable(
+	'user_genre',
+	{
+		id: serial('id').primaryKey(),
+		userId: text('user_id')
+			.notNull()
+			.references(() => user.id, { onDelete: 'cascade' }),
+		genre: text('genre').notNull(),
+		createdAt: timestamp('created_at').defaultNow().notNull()
+	},
+	(table) => [unique().on(table.userId, table.genre)]
+);
+
 export const movieListItem = pgTable('movie_list_item', {
 	id: serial('id').primaryKey(),
 	userId: text('user_id')

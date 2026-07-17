@@ -1,13 +1,17 @@
 <script lang="ts">
+	import PageHeader from '$lib/components/PageHeader.svelte';
 	import RecCard from '$lib/components/RecCard.svelte';
 
 	let { data } = $props();
 </script>
 
+<PageHeader
+	title="FH recs"
+	subtitle="Personalised foreign and festival picks based on your taste."
+/>
+
 <div class="container">
 	<section class="content-section">
-		<h2>FH recs</h2>
-
 		{#if data.error}
 			<p class="empty">{data.error}</p>
 		{:else if data.recommendations.length > 0}

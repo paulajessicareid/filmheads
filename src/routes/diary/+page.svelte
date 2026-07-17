@@ -7,6 +7,7 @@
 
 <MovieListPage
 	title="Film diary"
+	subtitle="A diary of all the films you've been watching."
 	movies={data.watched}
 	listType="watched"
 	message={form?.message}

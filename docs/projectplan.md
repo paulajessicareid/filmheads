@@ -3,3 +3,11 @@ It will also be a place you can log and keep track of movies you want to watch a
 
 It's important that the product is simple and focuses on function, inspo letterboxd 
 The movie posters are what should pop 
+
+July 14 
+- add move details functionality to the lists (watchlist, diary)
+    sort 
+    filter 
+    favourite 
+
+- Polish the colour palette and UI styling 

@@ -50,6 +50,13 @@
       "when": 1784036111657,
       "tag": "0006_certain_sprite",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1784293867039,
+      "tag": "0007_fine_silk_fever",
+      "breakpoints": true
     }
   ]
 }

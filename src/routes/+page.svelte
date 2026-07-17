@@ -7,6 +7,7 @@
 
 <MovieListPage
 	title="Watchlist"
+	subtitle="Keep track of all the films you want to watch."
 	movies={data.wantToWatch}
 	listType="want_to_watch"
 	message={form?.message}

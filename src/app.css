@@ -35,6 +35,26 @@ a {
 	padding: 1.5rem;
 }
 
+.page-header {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 1.5rem 1.5rem 0;
+	text-align: left;
+}
+
+.page-header h2 {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #2a6041;
+	margin: 0;
+}
+
+.page-subheader {
+	font-size: 0.9375rem;
+	color: #5a8a6a;
+	margin: 0.25rem 0 0;
+}
+
 .bungee-shade-regular {
 	font-family: 'Bungee Shade', sans-serif;
 	font-weight: 400;
@@ -712,6 +732,79 @@ button.btn-card-overlay.active {
 	font-size: 1.125rem;
 	margin-bottom: 1rem;
 	color: #2a6041;
+}
+
+.onboarding-section {
+	max-width: 640px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.genre-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.genre-pill {
+	padding: 0.375rem 0.875rem;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	border-radius: 999px;
+	border: 1.5px solid #2a6041;
+	background: transparent;
+	color: #2a6041;
+	cursor: pointer;
+	transition:
+		background 0.15s,
+		color 0.15s,
+		opacity 0.15s;
+}
+
+.genre-pill:hover:not(:disabled) {
+	background: #f0faf3;
+}
+
+.genre-pill.active {
+	background: #2a6041;
+	color: #fff;
+	border-color: #2a6041;
+}
+
+.genre-pill.active:hover:not(:disabled) {
+	background: #357a50;
+	color: #fff;
+}
+
+.genre-pill:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.onboarding-prefs {
+	display: grid;
+	gap: 0.75rem;
+	margin-bottom: 1rem;
+}
+
+.optional-label {
+	font-weight: 400;
+	color: #5a8a6a;
+}
+
+.onboarding-skip {
+	display: inline-block;
+	margin-top: 1rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: #5a8a6a;
+	text-decoration: none;
+}
+
+.onboarding-skip:hover {
+	color: #2a6041;
+	text-decoration: underline;
 }
 
 .recs-layout {
