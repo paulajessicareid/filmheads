@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import DiaryRatingDisplay from '$lib/components/DiaryRatingDisplay.svelte';
 	import type { ListType } from '$lib/server/db/movies';
 
 	type Movie = {
@@ -9,20 +10,57 @@
 		genres: string | null;
 		director: string | null;
 		favourite: boolean;
+		rating: number | null;
+		comment: string | null;
+		watchedAt: Date | string | null;
 	};
 
-	let { movie, listType }: { movie: Movie; listType: ListType } = $props();
+	let {
+		movie,
+		listType,
+		onOpenDiary
+	}: {
+		movie: Movie;
+		listType: ListType;
+		onOpenDiary?: (movie: Movie) => void;
+	} = $props();
+
+	const isDiary = $derived(listType === 'watched' && !!onOpenDiary);
 </script>
 
 <li class="movie-list-row">
-	{#if movie.posterPath}
+	{#if isDiary}
+		<button
+			type="button"
+			class="movie-open-trigger movie-open-poster"
+			aria-label="Rate {movie.title}"
+			onclick={() => onOpenDiary?.(movie)}
+		>
+			{#if movie.posterPath}
+				<img src={movie.posterPath} alt="" class="poster-list" width="80" height="120" />
+			{:else}
+				<span class="poster-placeholder poster-list" aria-hidden="true"></span>
+			{/if}
+		</button>
+	{:else if movie.posterPath}
 		<img src={movie.posterPath} alt="" class="poster-list" width="80" height="120" />
 	{:else}
 		<span class="poster-placeholder poster-list" aria-hidden="true"></span>
 	{/if}
 
 	<div class="movie-list-info">
-		<span class="movie-list-title">{movie.title}</span>
+		{#if isDiary}
+			<button
+				type="button"
+				class="movie-open-trigger movie-list-title"
+				onclick={() => onOpenDiary?.(movie)}
+			>
+				{movie.title}
+			</button>
+			<DiaryRatingDisplay rating={movie.rating} />
+		{:else}
+			<span class="movie-list-title">{movie.title}</span>
+		{/if}
 		<span class="movie-meta">{movie.genres ?? '—'}</span>
 		<span class="movie-meta">{movie.director ?? '—'}</span>
 	</div>

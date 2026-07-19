@@ -50,3 +50,30 @@ export async function toggleFavourite(userId: string, movieId: number) {
 		.set({ favourite: !item.favourite })
 		.where(and(eq(movieListItem.id, movieId), eq(movieListItem.userId, userId)));
 }
+
+export type DiaryEntryUpdate = {
+	rating: number | null;
+	comment: string | null;
+	watchedAt: Date | null;
+};
+
+export async function updateDiaryEntry(
+	userId: string,
+	movieId: number,
+	data: DiaryEntryUpdate
+) {
+	await db
+		.update(movieListItem)
+		.set({
+			rating: data.rating,
+			comment: data.comment,
+			watchedAt: data.watchedAt
+		})
+		.where(
+			and(
+				eq(movieListItem.id, movieId),
+				eq(movieListItem.userId, userId),
+				eq(movieListItem.listType, 'watched')
+			)
+		);
+}

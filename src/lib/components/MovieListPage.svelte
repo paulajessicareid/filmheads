@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
+	import DiaryEntryOverlay from '$lib/components/DiaryEntryOverlay.svelte';
 	import MovieCard from '$lib/components/MovieCard.svelte';
 	import MovieListRow from '$lib/components/MovieListRow.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
@@ -16,6 +17,9 @@
 		genres: string | null;
 		director: string | null;
 		favourite: boolean;
+		rating: number | null;
+		comment: string | null;
+		watchedAt: Date | string | null;
 	};
 
 	type SearchResult = {
@@ -52,8 +56,18 @@
 	let selectedGenre = $state('');
 	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 	let formEl: HTMLFormElement | undefined;
+	let selectedMovie = $state<Movie | null>(null);
 
 	const viewStorageKey = $derived(`filmheads-view-${listType}`);
+	const isDiary = $derived(listType === 'watched');
+
+	function openDiary(movie: Movie) {
+		selectedMovie = movie;
+	}
+
+	function closeDiary() {
+		selectedMovie = null;
+	}
 
 	const filteredMovies = $derived(
 		selectedGenre
@@ -267,13 +281,13 @@
 		{:else if viewMode === 'list'}
 			<ul class="movie-list">
 				{#each filteredMovies as movie (movie.id)}
-					<MovieListRow {movie} {listType} />
+					<MovieListRow {movie} {listType} onOpenDiary={isDiary ? openDiary : undefined} />
 				{/each}
 			</ul>
 		{:else}
 			<ul class="movie-card-grid">
 				{#each filteredMovies as movie (movie.id)}
-					<MovieCard {movie} {listType} />
+					<MovieCard {movie} {listType} onOpenDiary={isDiary ? openDiary : undefined} />
 				{/each}
 			</ul>
 		{/if}
@@ -283,3 +297,9 @@
 		<p class="error">{message}</p>
 	{/if}
 </div>
+
+{#if isDiary && selectedMovie}
+	{#key selectedMovie.id}
+		<DiaryEntryOverlay movie={selectedMovie} onClose={closeDiary} />
+	{/key}
+{/if}

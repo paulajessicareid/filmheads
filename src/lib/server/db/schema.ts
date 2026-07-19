@@ -52,6 +52,9 @@ export const movieListItem = pgTable('movie_list_item', {
 	genres: text('genres'),
 	director: text('director'),
 	favourite: boolean('favourite').default(false).notNull(),
+	rating: integer('rating'),
+	comment: text('comment'),
+	watchedAt: timestamp('watched_at'),
 	createdAt: timestamp('created_at').defaultNow().notNull()
 });
 
