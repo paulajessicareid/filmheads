@@ -16,7 +16,7 @@ export async function addMovieAction(event: RequestEvent) {
 	const posterPathRaw = formData.get('posterPath')?.toString().trim() ?? '';
 
 	if (!title) {
-		return fail(400, { message: 'Title is required' });
+		return fail(400, { message: "You'll need to enter a movie." });
 	}
 
 	if (listType !== 'want_to_watch' && listType !== 'watched') {
