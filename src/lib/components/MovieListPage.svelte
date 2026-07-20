@@ -9,6 +9,7 @@
 	import type { ListType } from '$lib/server/db/movies';
 
 	type ViewMode = 'list' | 'card';
+	type SortBy = 'rating' | 'az' | 'newest' | 'oldest';
 
 	type Movie = {
 		id: number;
@@ -20,6 +21,7 @@
 		rating: number | null;
 		comment: string | null;
 		watchedAt: Date | string | null;
+		createdAt: Date | string;
 	};
 
 	type SearchResult = {
@@ -54,6 +56,7 @@
 	let selectedPosterPath = $state('');
 	let viewMode = $state<ViewMode>('list');
 	let selectedGenre = $state('');
+	let sortBy = $state<SortBy>('newest');
 	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 	let formEl: HTMLFormElement | undefined;
 	let selectedMovie = $state<Movie | null>(null);
@@ -69,11 +72,32 @@
 		selectedMovie = null;
 	}
 
-	const filteredMovies = $derived(
-		selectedGenre
+	function createdAtMs(movie: Movie) {
+		return new Date(movie.createdAt).getTime();
+	}
+
+	const filteredMovies = $derived.by(() => {
+		const filtered = selectedGenre
 			? movies.filter((m) => m.genres?.split(', ').includes(selectedGenre))
-			: movies
-	);
+			: [...movies];
+
+		return filtered.toSorted((a, b) => {
+			switch (sortBy) {
+				case 'rating': {
+					const aRating = a.rating ?? -1;
+					const bRating = b.rating ?? -1;
+					return bRating - aRating || a.title.localeCompare(b.title);
+				}
+				case 'az':
+					return a.title.localeCompare(b.title);
+				case 'oldest':
+					return createdAtMs(a) - createdAtMs(b);
+				case 'newest':
+				default:
+					return createdAtMs(b) - createdAtMs(a);
+			}
+		});
+	});
 
 	$effect(() => {
 		if (!browser) return;
@@ -210,6 +234,14 @@
 				{#each GENRES as genre}
 					<option value={genre}>{genre}</option>
 				{/each}
+			</select>
+			<select class="genre-filter" bind:value={sortBy} aria-label="Sort movies">
+				{#if isDiary}
+					<option value="rating">By rating</option>
+				{/if}
+				<option value="az">A–Z</option>
+				<option value="newest">Newest added</option>
+				<option value="oldest">Oldest added</option>
 			</select>
 		</div>
 		<div class="movies-toolbar">

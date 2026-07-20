@@ -33,9 +33,7 @@
 	<section class="content-section">
 		<h2>Genres</h2>
 		<p class="form-note">You can pick up to 4 genres to help steer your FH reccs.</p>
-		{#if data.preferences.genres.length === 0}
-			<p class="empty">No genres added yet.</p>
-		{:else}
+		{#if data.preferences.genres.length > 0}
 			<ul class="preference-list">
 				{#each data.preferences.genres as genre (genre)}
 					<li>
@@ -78,10 +76,8 @@
 	</section>
 
 	<section class="content-section">
-		<h2>Countries</h2>
-		{#if data.preferences.countries.length === 0}
-			<p class="empty">No countries added yet.</p>
-		{:else}
+		<h2>Countries you're familiar with</h2>
+		{#if data.preferences.countries.length > 0}
 			<ul class="preference-list">
 				{#each data.preferences.countries as countryCode (countryCode)}
 					<li>
@@ -97,7 +93,7 @@
 
 		<form method="post" action="?/addCountry" class="add-preference-form" use:enhance>
 			<label>
-				Add country
+				Add country <span class="optional-label">(optional)</span>
 				<select name="countryCode" required disabled={availableCountries.length === 0}>
 					<option value="">
 						{availableCountries.length === 0 ? 'All countries added' : 'Select a country'}
@@ -114,10 +110,8 @@
 	</section>
 
 	<section class="content-section">
-		<h2>Languages</h2>
-		{#if data.preferences.languages.length === 0}
-			<p class="empty">No languages added yet.</p>
-		{:else}
+		<h2>Languages you're familiar with</h2>
+		{#if data.preferences.languages.length > 0}
 			<ul class="preference-list">
 				{#each data.preferences.languages as languageCode (languageCode)}
 					<li>
@@ -133,7 +127,7 @@
 
 		<form method="post" action="?/addLanguage" class="add-preference-form" use:enhance>
 			<label>
-				Add language
+				Add language <span class="optional-label">(optional)</span>
 				<select name="languageCode" required disabled={availableLanguages.length === 0}>
 					<option value="">
 						{availableLanguages.length === 0 ? 'All languages added' : 'Select a language'}
