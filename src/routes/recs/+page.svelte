@@ -1,8 +1,13 @@
 <script lang="ts">
+	import FirstRunGuidance from '$lib/components/FirstRunGuidance.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
 	import RecCard from '$lib/components/RecCard.svelte';
 
 	let { data } = $props();
+	let gatedDismissed = $state(false);
+
+	const gatedMessage =
+		'Add at least a few movies to your diary or watchlist and then check back here for some fun recommendations.';
 </script>
 
 <PageHeader
@@ -20,6 +25,8 @@
 					<RecCard {recommendation} />
 				{/each}
 			</div>
+		{:else if data.gated && !gatedDismissed}
+			<FirstRunGuidance message={gatedMessage} onDismiss={() => (gatedDismissed = true)} />
 		{:else}
 			<p class="empty">
 				No recommendations yet. Add films to your watchlist and diary to get personalised picks.

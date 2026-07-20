@@ -11,4 +11,5 @@
 	movies={data.wantToWatch}
 	listType="want_to_watch"
 	message={form?.message}
+	guidanceMessage={data.guidanceMessage}
 />

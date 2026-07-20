@@ -12,4 +12,5 @@
 	listType="watched"
 	message={form?.message}
 	emptyMessage="No watched movies yet"
+	guidanceMessage={data.guidanceMessage}
 />

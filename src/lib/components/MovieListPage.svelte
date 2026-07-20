@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
 	import DiaryEntryOverlay from '$lib/components/DiaryEntryOverlay.svelte';
+	import FirstRunGuidance from '$lib/components/FirstRunGuidance.svelte';
 	import MovieCard from '$lib/components/MovieCard.svelte';
 	import MovieListRow from '$lib/components/MovieListRow.svelte';
 	import PageHeader from '$lib/components/PageHeader.svelte';
@@ -41,7 +42,8 @@
 		movies,
 		listType,
 		message,
-		emptyMessage = 'No movies yet'
+		emptyMessage = 'No movies yet',
+		guidanceMessage = null
 	}: {
 		title: string;
 		subtitle: string;
@@ -49,6 +51,7 @@
 		listType: ListType;
 		message?: string;
 		emptyMessage?: string;
+		guidanceMessage?: string | null;
 	} = $props();
 
 	let query = $state('');
@@ -64,9 +67,11 @@
 	let debounceTimer: ReturnType<typeof setTimeout> | undefined;
 	let formEl: HTMLFormElement | undefined;
 	let selectedMovie = $state<Movie | null>(null);
+	let guidanceDismissed = $state(false);
 
 	const viewStorageKey = $derived(`filmheads-view-${listType}`);
 	const isDiary = $derived(listType === 'watched');
+	const showGuidance = $derived(!!guidanceMessage && !guidanceDismissed);
 
 	function openDiary(movie: Movie) {
 		selectedMovie = movie;
@@ -319,8 +324,14 @@
 			</div>
 		</div>
 
+		{#if guidanceMessage}
+			<FirstRunGuidance message={guidanceMessage} onDismiss={() => (guidanceDismissed = true)} />
+		{/if}
+
 		{#if movies.length === 0}
-			<p class="empty">{emptyMessage}</p>
+			{#if !showGuidance}
+				<p class="empty">{emptyMessage}</p>
+			{/if}
 		{:else if filteredMovies.length === 0}
 			<p class="empty">No movies match this genre</p>
 		{:else if viewMode === 'list'}

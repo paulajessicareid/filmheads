@@ -7,12 +7,13 @@ export const load: PageServerLoad = async (event) => {
 	const user = requireUser(event);
 
 	try {
-		const recommendations = await getRecommendationsForUser(user.id);
-		return { recommendations, error: null };
+		const { recommendations, gated } = await getRecommendationsForUser(user.id);
+		return { recommendations, gated, error: null };
 	} catch (err) {
 		console.error('Failed to load recommendations:', err);
 		return {
 			recommendations: [],
+			gated: false,
 			error: err instanceof Error ? err.message : 'Failed to generate recommendations'
 		};
 	}

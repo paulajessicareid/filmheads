@@ -9,6 +9,18 @@ import { getUserPreferences } from '$lib/server/db/user-preferences';
 import { generateFilmRecommendations, type LlmRecommendation } from '$lib/server/openai';
 import { findMovieByTitleYear, getMovieDetails } from '$lib/server/tmdb';
 
+type Movies = Awaited<ReturnType<typeof getMoviesByUser>>;
+type Prefs = Awaited<ReturnType<typeof getUserPreferences>>;
+
+export function canGenerateRecommendations(movies: Movies, prefs: Prefs): boolean {
+	const diaryCount = movies.watched.length;
+	const watchlistCount = movies.wantToWatch.length;
+	const totalMovies = diaryCount + watchlistCount;
+	const hasGenres = prefs.genres.length > 0;
+
+	return diaryCount >= 3 || watchlistCount >= 3 || (hasGenres && totalMovies >= 1);
+}
+
 async function enrichWithTmdb(
 	llmResults: LlmRecommendation[],
 	existingTmdbIds: Set<number>
@@ -46,6 +58,10 @@ async function enrichWithTmdb(
 async function generateRecommendations(userId: string): Promise<RecommendationItem[]> {
 	const [movies, prefs] = await Promise.all([getMoviesByUser(userId), getUserPreferences(userId)]);
 
+	if (!canGenerateRecommendations(movies, prefs)) {
+		return [];
+	}
+
 	const existingTmdbIds = new Set(
 		[...movies.wantToWatch, ...movies.watched]
 			.map((m) => m.tmdbId)
@@ -62,11 +78,23 @@ async function generateRecommendations(userId: string): Promise<RecommendationIt
 	return enriched;
 }
 
-export async function getRecommendationsForUser(userId: string): Promise<RecommendationItem[]> {
-	const cached = await getActiveRecommendations(userId);
-	if (cached.length > 0) return cached;
+export async function getRecommendationsForUser(userId: string): Promise<{
+	recommendations: RecommendationItem[];
+	gated: boolean;
+}> {
+	const [movies, prefs] = await Promise.all([getMoviesByUser(userId), getUserPreferences(userId)]);
 
-	return generateRecommendations(userId);
+	if (!canGenerateRecommendations(movies, prefs)) {
+		return { recommendations: [], gated: true };
+	}
+
+	const cached = await getActiveRecommendations(userId);
+	if (cached.length > 0) {
+		return { recommendations: cached, gated: false };
+	}
+
+	const recommendations = await generateRecommendations(userId);
+	return { recommendations, gated: false };
 }
 
 export async function refreshRecommendationsForUser(userId: string): Promise<RecommendationItem[]> {
