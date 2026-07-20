@@ -162,6 +162,9 @@
 
 <div class="container">
 	<section class="search-section">
+		{#if message}
+			<p class="error">{message}</p>
+		{/if}
 		<form
 			method="post"
 			action="?/addMovie"
@@ -324,10 +327,6 @@
 			</ul>
 		{/if}
 	</section>
-
-	{#if message}
-		<p class="error">{message}</p>
-	{/if}
 </div>
 
 {#if isDiary && selectedMovie}
