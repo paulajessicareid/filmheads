@@ -25,15 +25,33 @@ type LlmResponse = {
 	recommendations: LlmRecommendation[];
 };
 
-function formatMovieList(
+function formatWatchlist(
 	movies: Awaited<ReturnType<typeof getMoviesByUser>>['wantToWatch']
 ): string {
 	if (movies.length === 0) return 'None';
 	return movies
 		.map((m) => {
 			const parts = [m.title];
+			if (m.releaseYear) parts.push(`year: ${m.releaseYear}`);
 			if (m.genres) parts.push(`genres: ${m.genres}`);
 			if (m.director) parts.push(`director: ${m.director}`);
+			return `- ${parts.join(', ')}`;
+		})
+		.join('\n');
+}
+
+function formatDiary(
+	movies: Awaited<ReturnType<typeof getMoviesByUser>>['watched']
+): string {
+	if (movies.length === 0) return 'None';
+	return movies
+		.map((m) => {
+			const parts = [m.title];
+			if (m.releaseYear) parts.push(`year: ${m.releaseYear}`);
+			if (m.genres) parts.push(`genres: ${m.genres}`);
+			if (m.director) parts.push(`director: ${m.director}`);
+			if (m.rating != null) parts.push(`rating: ${m.rating}/5`);
+			if (m.comment) parts.push(`comment: "${m.comment}"`);
 			return `- ${parts.join(', ')}`;
 		})
 		.join('\n');
@@ -52,10 +70,10 @@ function buildPrompt(context: RecommendationContext): string {
 Based on this user's taste profile, recommend 1 to 3 foreign films they may not have seen or heard of.
 
 User watchlist (want to watch):
-${formatMovieList(movies.wantToWatch)}
+${formatWatchlist(movies.wantToWatch)}
 
-User diary (already watched):
-${formatMovieList(movies.watched)}
+User diary (already watched — use ratings and comments as strong taste signals):
+${formatDiary(movies.watched)}
 
 User's preferred genres: ${genreNames}
 User's preferred countries of interest: ${countryNames}
@@ -69,6 +87,7 @@ Guidelines:
 - International film festival favourites are a great source (Cannes, Berlin, Venice, Toronto, etc.)
 - Films do not need to be obscure, but should broaden their horizons
 - Each recommendation should feel personally relevant to their taste
+- Weight diary ratings and comments heavily when inferring taste
 - Return between 1 and 3 recommendations
 
 Respond with JSON only, in this exact shape:

@@ -15,6 +15,9 @@ export type TmdbMovieDetails = {
 	director: string | null;
 	originCountry: string | null;
 	spokenLanguages: string | null;
+	overview: string | null;
+	releaseYear: number | null;
+	cast: string | null;
 };
 
 export type TmdbMovieMatch = {
@@ -42,6 +45,8 @@ type TmdbGenre = {
 
 type TmdbMovieDetailsResponse = {
 	genres: TmdbGenre[];
+	overview?: string;
+	release_date?: string;
 	origin_country?: string[];
 	spoken_languages?: { english_name: string }[];
 };
@@ -51,7 +56,13 @@ type TmdbCrewMember = {
 	name: string;
 };
 
+type TmdbCastMember = {
+	name: string;
+	order: number;
+};
+
 type TmdbCreditsResponse = {
+	cast: TmdbCastMember[];
 	crew: TmdbCrewMember[];
 };
 
@@ -125,8 +136,28 @@ export async function getMovieDetails(tmdbId: number): Promise<TmdbMovieDetails>
 		details.spoken_languages && details.spoken_languages.length > 0
 			? details.spoken_languages.map((lang) => lang.english_name).join(', ')
 			: null;
+	const overview = details.overview?.trim() || null;
+	const releaseYear = details.release_date
+		? Number.parseInt(details.release_date.slice(0, 4), 10)
+		: null;
+	const cast =
+		credits.cast.length > 0
+			? [...credits.cast]
+					.sort((a, b) => a.order - b.order)
+					.slice(0, 5)
+					.map((member) => member.name)
+					.join(', ')
+			: null;
 
-	return { genres, director, originCountry, spokenLanguages };
+	return {
+		genres,
+		director,
+		originCountry,
+		spokenLanguages,
+		overview,
+		releaseYear: Number.isInteger(releaseYear) ? releaseYear : null,
+		cast
+	};
 }
 
 export async function findMovieByTitleYear(

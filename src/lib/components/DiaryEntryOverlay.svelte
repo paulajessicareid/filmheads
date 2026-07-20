@@ -5,6 +5,10 @@
 		id: number;
 		title: string;
 		posterPath: string | null;
+		tmdbId?: number | null;
+		releaseYear: number | null;
+		overview: string | null;
+		cast: string | null;
 		rating: number | null;
 		comment: string | null;
 		watchedAt: Date | string | null;
@@ -35,7 +39,54 @@
 	let comment = $state(movie.comment ?? '');
 	/* svelte-ignore state_referenced_locally */
 	let watchedAt = $state(toDateInputValue(movie.watchedAt));
+	/* svelte-ignore state_referenced_locally */
+	let releaseYear = $state(movie.releaseYear);
+	/* svelte-ignore state_referenced_locally */
+	let overview = $state(movie.overview);
+	/* svelte-ignore state_referenced_locally */
+	let cast = $state(movie.cast);
+	let detailsLoading = $state(false);
 	let saving = $state(false);
+
+	$effect(() => {
+		const needsDetails =
+			movie.tmdbId &&
+			(releaseYear == null || !overview || !cast);
+
+		if (!needsDetails) return;
+
+		let cancelled = false;
+		detailsLoading = true;
+
+		const params = new URLSearchParams({
+			tmdbId: String(movie.tmdbId),
+			movieId: String(movie.id)
+		});
+
+		fetch(`/api/movies/details?${params}`)
+			.then(async (response) => {
+				if (!response.ok || cancelled) return;
+				const data = (await response.json()) as {
+					overview: string | null;
+					releaseYear: number | null;
+					cast: string | null;
+				};
+				if (cancelled) return;
+				if (data.releaseYear != null) releaseYear = data.releaseYear;
+				if (data.overview) overview = data.overview;
+				if (data.cast) cast = data.cast;
+			})
+			.catch(() => {
+				/* keep stored values */
+			})
+			.finally(() => {
+				if (!cancelled) detailsLoading = false;
+			});
+
+		return () => {
+			cancelled = true;
+		};
+	});
 
 	function onKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape') onClose();
@@ -81,11 +132,35 @@
 
 		<div class="diary-overlay-header">
 			{#if movie.posterPath}
-				<img src={movie.posterPath} alt="" class="diary-overlay-poster" width="120" height="180" />
+				<img src={movie.posterPath} alt="" class="diary-overlay-poster" width="140" height="210" />
 			{:else}
 				<span class="poster-placeholder diary-overlay-poster" aria-hidden="true"></span>
 			{/if}
-			<h2 id="diary-overlay-title" class="diary-overlay-title">{movie.title}</h2>
+			<div class="diary-overlay-heading">
+				<h2 id="diary-overlay-title" class="diary-overlay-title">{movie.title}</h2>
+				{#if releaseYear}
+					<p class="diary-overlay-year">{releaseYear}</p>
+				{/if}
+			</div>
+		</div>
+
+		<div class="diary-overlay-details">
+			{#if detailsLoading && !overview}
+				<p class="diary-overlay-meta">Loading details…</p>
+			{:else}
+				{#if overview}
+					<section class="diary-overlay-block">
+						<h3>Synopsis</h3>
+						<p>{overview}</p>
+					</section>
+				{/if}
+				{#if cast}
+					<section class="diary-overlay-block">
+						<h3>Stars</h3>
+						<p>{cast}</p>
+					</section>
+				{/if}
+			{/if}
 		</div>
 
 		<form

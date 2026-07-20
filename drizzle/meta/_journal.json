@@ -64,6 +64,13 @@
       "when": 1784487993546,
       "tag": "0008_organic_doctor_doom",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1784577151010,
+      "tag": "0009_movie_details",
+      "breakpoints": true
     }
   ]
 }

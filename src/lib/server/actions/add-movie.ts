@@ -33,18 +33,18 @@ export async function addMovieAction(event: RequestEvent) {
 		return fail(400, { message: 'Invalid poster URL' });
 	}
 
-	let genres: string | null = null;
-	let director: string | null = null;
-
 	try {
 		const details = await getMovieDetails(tmdbId);
-		genres = details.genres;
-		director = details.director;
+		await addMovie(event.locals.user.id, title, listType, tmdbId, posterPath, {
+			genres: details.genres,
+			director: details.director,
+			releaseYear: details.releaseYear,
+			overview: details.overview,
+			cast: details.cast
+		});
 	} catch {
 		return fail(502, { message: 'Could not fetch movie details. Try again.' });
 	}
-
-	await addMovie(event.locals.user.id, title, listType, tmdbId, posterPath, genres, director);
 
 	return { success: true };
 }

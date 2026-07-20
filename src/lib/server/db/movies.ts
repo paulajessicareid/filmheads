@@ -17,18 +17,34 @@ export async function getMoviesByUser(userId: string) {
 	};
 }
 
+export type AddMovieDetails = {
+	genres: string | null;
+	director: string | null;
+	releaseYear: number | null;
+	overview: string | null;
+	cast: string | null;
+};
+
 export async function addMovie(
 	userId: string,
 	title: string,
 	listType: ListType,
 	tmdbId: number,
 	posterPath: string | null,
-	genres: string | null,
-	director: string | null
+	details: AddMovieDetails
 ) {
-	await db
-		.insert(movieListItem)
-		.values({ userId, title, listType, tmdbId, posterPath, genres, director });
+	await db.insert(movieListItem).values({
+		userId,
+		title,
+		listType,
+		tmdbId,
+		posterPath,
+		genres: details.genres,
+		director: details.director,
+		releaseYear: details.releaseYear,
+		overview: details.overview,
+		cast: details.cast
+	});
 }
 
 export async function removeMovie(userId: string, movieId: number) {
@@ -48,6 +64,44 @@ export async function toggleFavourite(userId: string, movieId: number) {
 	await db
 		.update(movieListItem)
 		.set({ favourite: !item.favourite })
+		.where(and(eq(movieListItem.id, movieId), eq(movieListItem.userId, userId)));
+}
+
+export async function moveToDiary(userId: string, movieId: number) {
+	await db
+		.update(movieListItem)
+		.set({ listType: 'watched' })
+		.where(
+			and(
+				eq(movieListItem.id, movieId),
+				eq(movieListItem.userId, userId),
+				eq(movieListItem.listType, 'want_to_watch')
+			)
+		);
+}
+
+export type MovieDetailsBackfill = {
+	releaseYear: number | null;
+	overview: string | null;
+	cast: string | null;
+	genres?: string | null;
+	director?: string | null;
+};
+
+export async function backfillMovieDetails(
+	userId: string,
+	movieId: number,
+	data: MovieDetailsBackfill
+) {
+	await db
+		.update(movieListItem)
+		.set({
+			releaseYear: data.releaseYear,
+			overview: data.overview,
+			cast: data.cast,
+			...(data.genres !== undefined ? { genres: data.genres } : {}),
+			...(data.director !== undefined ? { director: data.director } : {})
+		})
 		.where(and(eq(movieListItem.id, movieId), eq(movieListItem.userId, userId)));
 }
 

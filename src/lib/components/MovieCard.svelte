@@ -7,12 +7,17 @@
 		id: number;
 		title: string;
 		posterPath: string | null;
+		tmdbId: number | null;
 		genres: string | null;
 		director: string | null;
+		releaseYear: number | null;
+		overview: string | null;
+		cast: string | null;
 		favourite: boolean;
 		rating: number | null;
 		comment: string | null;
 		watchedAt: Date | string | null;
+		createdAt: Date | string;
 	};
 
 	let {
@@ -51,6 +56,30 @@
 
 		<div class="movie-card-actions">
 			{#if listType === 'want_to_watch'}
+				<form method="post" action="?/moveToDiary" use:enhance class="movie-move-form">
+					<input type="hidden" name="movieId" value={movie.id} />
+					<button
+						type="submit"
+						class="btn-move-diary btn-card-overlay"
+						aria-label="Add {movie.title} to diary"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<path d="M5 12h14" />
+							<path d="M12 5v14" />
+						</svg>
+					</button>
+				</form>
 				<form method="post" action="?/toggleFavourite" use:enhance class="movie-fav-form">
 					<input type="hidden" name="movieId" value={movie.id} />
 					<button
@@ -108,11 +137,15 @@
 				class="movie-open-trigger movie-card-title"
 				onclick={() => onOpenDiary?.(movie)}
 			>
-				{movie.title}
+				{movie.title}{#if movie.releaseYear}
+					<span class="movie-year"> ({movie.releaseYear})</span>{/if}
 			</button>
 			<DiaryRatingDisplay rating={movie.rating} />
 		{:else}
-			<span class="movie-card-title">{movie.title}</span>
+			<span class="movie-card-title">
+				{movie.title}{#if movie.releaseYear}
+					<span class="movie-year"> ({movie.releaseYear})</span>{/if}
+			</span>
 		{/if}
 		<span class="movie-meta">{movie.genres ?? '—'}</span>
 		<span class="movie-meta">{movie.director ?? '—'}</span>

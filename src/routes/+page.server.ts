@@ -1,5 +1,6 @@
 import type { Actions, PageServerLoad } from './$types';
 import { addMovieAction } from '$lib/server/actions/add-movie';
+import { moveToDiaryAction } from '$lib/server/actions/move-to-diary';
 import { removeMovieAction } from '$lib/server/actions/remove-movie';
 import { toggleFavouriteAction } from '$lib/server/actions/toggle-favourite';
 import { requireUser } from '$lib/server/auth-guard';
@@ -17,5 +18,6 @@ export const load: PageServerLoad = async (event) => {
 export const actions: Actions = {
 	addMovie: addMovieAction,
 	removeMovie: removeMovieAction,
-	toggleFavourite: toggleFavouriteAction
+	toggleFavourite: toggleFavouriteAction,
+	moveToDiary: moveToDiaryAction
 };

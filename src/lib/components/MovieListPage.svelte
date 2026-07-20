@@ -9,14 +9,18 @@
 	import type { ListType } from '$lib/server/db/movies';
 
 	type ViewMode = 'list' | 'card';
-	type SortBy = 'rating' | 'az' | 'newest' | 'oldest';
+	type SortBy = 'rating' | 'az' | 'newest' | 'oldest' | 'year';
 
 	type Movie = {
 		id: number;
 		title: string;
 		posterPath: string | null;
+		tmdbId: number | null;
 		genres: string | null;
 		director: string | null;
+		releaseYear: number | null;
+		overview: string | null;
+		cast: string | null;
 		favourite: boolean;
 		rating: number | null;
 		comment: string | null;
@@ -90,6 +94,11 @@
 				}
 				case 'az':
 					return a.title.localeCompare(b.title);
+				case 'year': {
+					const aYear = a.releaseYear ?? -1;
+					const bYear = b.releaseYear ?? -1;
+					return bYear - aYear || a.title.localeCompare(b.title);
+				}
 				case 'oldest':
 					return createdAtMs(a) - createdAtMs(b);
 				case 'newest':
@@ -243,6 +252,7 @@
 					<option value="rating">By rating</option>
 				{/if}
 				<option value="az">A–Z</option>
+				<option value="year">By year</option>
 				<option value="newest">Newest added</option>
 				<option value="oldest">Oldest added</option>
 			</select>
