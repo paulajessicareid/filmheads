@@ -21,26 +21,38 @@
 <article class="rec-card">
 	<div class="rec-card-poster-wrap">
 		{#if recommendation.posterPath}
-			<img src={recommendation.posterPath} alt="" class="poster-card rec-card-poster" />
+			<img
+				src={recommendation.posterPath}
+				alt="Poster for {recommendation.title}"
+				class="rec-card-poster"
+			/>
 		{:else}
-			<span class="poster-placeholder poster-card rec-card-poster" aria-hidden="true"></span>
+			<span class="poster-placeholder rec-card-poster" aria-hidden="true"></span>
 		{/if}
 	</div>
 
 	<div class="rec-card-info">
 		<h3 class="rec-card-title">{recommendation.title}</h3>
-		<span class="movie-meta">{recommendation.genres ?? '—'}</span>
-		<span class="movie-meta">{recommendation.director ?? '—'}</span>
 
-		{#if recommendation.country}
-			<span class="rec-card-meta">Country: {recommendation.country}</span>
+		{#if recommendation.director}
+			<span class="movie-meta">{recommendation.director}</span>
 		{/if}
-		{#if recommendation.language}
-			<span class="rec-card-meta">Language: {recommendation.language}</span>
+		{#if recommendation.genres}
+			<span class="movie-meta">{recommendation.genres}</span>
 		{/if}
 
-		{#if recommendation.isIndependent}
-			<span class="rec-badge-indie">Independent film</span>
+		{#if recommendation.country || recommendation.language || recommendation.isIndependent}
+			<div class="rec-card-facts">
+				{#if recommendation.country}
+					<span class="rec-card-meta">{recommendation.country}</span>
+				{/if}
+				{#if recommendation.language}
+					<span class="rec-card-meta">{recommendation.language}</span>
+				{/if}
+				{#if recommendation.isIndependent}
+					<span class="rec-badge-indie">Independent</span>
+				{/if}
+			</div>
 		{/if}
 
 		{#if recommendation.pitch}

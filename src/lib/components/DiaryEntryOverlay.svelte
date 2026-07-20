@@ -1,18 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-
-	type Movie = {
-		id: number;
-		title: string;
-		posterPath: string | null;
-		tmdbId?: number | null;
-		releaseYear: number | null;
-		overview: string | null;
-		cast: string | null;
-		rating: number | null;
-		comment: string | null;
-		watchedAt: Date | string | null;
-	};
+	import type { Movie } from '$lib/types/movie';
 
 	let {
 		movie,
