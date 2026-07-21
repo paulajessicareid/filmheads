@@ -39,7 +39,6 @@
 	--surface-radius: var(--radius-lg);
 	--surface-padding: var(--space-5);
 
-	/* Posters */
 	--poster-ratio: 2 / 3;
 	--poster-radius: var(--radius-sm);
 	--poster-thumb-w: 40px;
