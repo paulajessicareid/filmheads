@@ -101,3 +101,9 @@ export async function refreshRecommendationsForUser(userId: string): Promise<Rec
 	await clearRecommendations(userId);
 	return generateRecommendations(userId);
 }
+
+export function generateRecommendationsInBackground(userId: string): void {
+	generateRecommendations(userId).catch((err) => {
+		console.error('Background recommendation generation failed for user', userId, err);
+	});
+}
