@@ -2,8 +2,9 @@ import type { Actions, PageServerLoad } from './$types';
 import { requireUser } from '$lib/server/auth-guard';
 import {
 	canGenerateRecommendations,
-	getRecommendationsForUser,
-	generateRecommendationsInBackground
+	ensureRecommendationsGenerating,
+	getGenerationStatus,
+	retryRecommendationsGeneration
 } from '$lib/server/recommendations';
 import { getActiveRecommendations } from '$lib/server/db/recommendations';
 import { getMoviesByUser } from '$lib/server/db/movies';
@@ -19,20 +20,31 @@ export const load: PageServerLoad = async (event) => {
 	]);
 
 	if (!canGenerateRecommendations(movies, prefs)) {
-		return { recommendations: [], gated: true, generating: false };
+		return { recommendations: [], gated: true, generating: false, generationFailed: false };
 	}
 
 	const cached = await getActiveRecommendations(user.id);
 	if (cached.length > 0) {
-		return { recommendations: cached, gated: false, generating: false };
+		return { recommendations: cached, gated: false, generating: false, generationFailed: false };
 	}
 
-	// Kick off generation in the background — don't block the page load
-	generateRecommendationsInBackground(user.id);
+	const status = getGenerationStatus(user.id);
+	if (status === 'failed') {
+		return { recommendations: [], gated: false, generating: false, generationFailed: true };
+	}
 
-	return { recommendations: [], gated: false, generating: true };
+	if (status === 'pending') {
+		return { recommendations: [], gated: false, generating: true, generationFailed: false };
+	}
+
+	ensureRecommendationsGenerating(user.id);
+	return { recommendations: [], gated: false, generating: true, generationFailed: false };
 };
 
 export const actions: Actions = {
-	addMovie: addMovieAction
+	addMovie: addMovieAction,
+	retry: async (event) => {
+		const user = requireUser(event);
+		retryRecommendationsGeneration(user.id);
+	}
 };
