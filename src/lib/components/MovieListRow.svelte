@@ -7,23 +7,27 @@
 	let {
 		movie,
 		listType,
-		onOpenDiary
+		onOpenMovie
 	}: {
 		movie: Movie;
 		listType: ListType;
-		onOpenDiary?: (movie: Movie) => void;
+		onOpenMovie?: (movie: Movie) => void;
 	} = $props();
 
-	const isDiary = $derived(listType === 'watched' && !!onOpenDiary);
+	const canOpen = $derived(!!onOpenMovie);
+	const isDiary = $derived(listType === 'watched');
+	const openAriaLabel = $derived(
+		isDiary ? `Rate ${movie.title}` : `View details for ${movie.title}`
+	);
 </script>
 
 <li class="movie-list-row">
-	{#if isDiary}
+	{#if canOpen}
 		<button
 			type="button"
 			class="movie-open-trigger movie-open-poster"
-			aria-label="Rate {movie.title}"
-			onclick={() => onOpenDiary?.(movie)}
+			aria-label={openAriaLabel}
+			onclick={() => onOpenMovie?.(movie)}
 		>
 			{#if movie.posterPath}
 				<img src={movie.posterPath} alt="" class="poster-list" width="80" height="120" />
@@ -38,16 +42,18 @@
 	{/if}
 
 	<div class="movie-list-info">
-		{#if isDiary}
+		{#if canOpen}
 			<button
 				type="button"
 				class="movie-open-trigger movie-list-title"
-				onclick={() => onOpenDiary?.(movie)}
+				onclick={() => onOpenMovie?.(movie)}
 			>
 				{movie.title}{#if movie.releaseYear}
 					<span class="movie-year"> ({movie.releaseYear})</span>{/if}
 			</button>
-			<DiaryRatingDisplay rating={movie.rating} />
+			{#if isDiary}
+				<DiaryRatingDisplay rating={movie.rating} />
+			{/if}
 		{:else}
 			<span class="movie-list-title">
 				{movie.title}{#if movie.releaseYear}

@@ -50,11 +50,11 @@
 		saveViewMode(listType, mode);
 	}
 
-	function openDiary(movie: Movie) {
+	function openMovie(movie: Movie) {
 		selectedMovie = movie;
 	}
 
-	function closeDiary() {
+	function closeMovie() {
 		selectedMovie = null;
 	}
 </script>
@@ -87,21 +87,25 @@
 		{:else if viewMode === 'list'}
 			<ul class="movie-list">
 				{#each filteredMovies as movie (movie.id)}
-					<MovieListRow {movie} {listType} onOpenDiary={isDiary ? openDiary : undefined} />
+					<MovieListRow {movie} {listType} onOpenMovie={openMovie} />
 				{/each}
 			</ul>
 		{:else}
 			<ul class="movie-card-grid">
 				{#each filteredMovies as movie (movie.id)}
-					<MovieCard {movie} {listType} onOpenDiary={isDiary ? openDiary : undefined} />
+					<MovieCard {movie} {listType} onOpenMovie={openMovie} />
 				{/each}
 			</ul>
 		{/if}
 	</section>
 </div>
 
-{#if isDiary && selectedMovie}
+{#if selectedMovie}
 	{#key selectedMovie.id}
-		<DiaryEntryOverlay movie={selectedMovie} onClose={closeDiary} />
+		<DiaryEntryOverlay
+			movie={selectedMovie}
+			mode={isDiary ? 'diary' : 'detail'}
+			onClose={closeMovie}
+		/>
 	{/key}
 {/if}

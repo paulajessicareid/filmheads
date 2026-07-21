@@ -4,11 +4,15 @@
 
 	let {
 		movie,
-		onClose
+		onClose,
+		mode = 'diary'
 	}: {
 		movie: Movie;
 		onClose: () => void;
+		mode?: 'diary' | 'detail';
 	} = $props();
+
+	const isDiary = $derived(mode === 'diary');
 
 	function toDateInputValue(value: Date | string | null): string {
 		if (!value) return '';
@@ -22,11 +26,11 @@
 
 	// Initial values — remounted via {#key movie.id} when opening a different entry
 	/* svelte-ignore state_referenced_locally */
-	let rating = $state(movie.rating ?? 0);
+	let rating = $state(mode === 'diary' ? (movie.rating ?? 0) : 0);
 	/* svelte-ignore state_referenced_locally */
-	let comment = $state(movie.comment ?? '');
+	let comment = $state(mode === 'diary' ? (movie.comment ?? '') : '');
 	/* svelte-ignore state_referenced_locally */
-	let watchedAt = $state(toDateInputValue(movie.watchedAt));
+	let watchedAt = $state(mode === 'diary' ? toDateInputValue(movie.watchedAt) : '');
 	/* svelte-ignore state_referenced_locally */
 	let releaseYear = $state(movie.releaseYear);
 	/* svelte-ignore state_referenced_locally */
@@ -151,75 +155,77 @@
 			{/if}
 		</div>
 
-		<form
-			method="post"
-			action="?/updateDiaryEntry"
-			use:enhance={() => {
-				saving = true;
-				return async ({ result, update }) => {
-					saving = false;
-					if (result.type === 'success') {
+		{#if isDiary}
+			<form
+				method="post"
+				action="?/updateDiaryEntry"
+				use:enhance={() => {
+					saving = true;
+					return async ({ result, update }) => {
+						saving = false;
+						if (result.type === 'success') {
+							await update();
+							onClose();
+							return;
+						}
 						await update();
-						onClose();
-						return;
-					}
-					await update();
-				};
-			}}
-			class="diary-overlay-form"
-		>
-			<input type="hidden" name="movieId" value={movie.id} />
-			<input type="hidden" name="rating" value={rating > 0 ? rating : ''} />
+					};
+				}}
+				class="diary-overlay-form"
+			>
+				<input type="hidden" name="movieId" value={movie.id} />
+				<input type="hidden" name="rating" value={rating > 0 ? rating : ''} />
 
-			<fieldset class="diary-overlay-rating">
-				<legend>Your rating</legend>
-				<div class="diary-rating diary-rating-interactive" role="group" aria-label="Rate out of 5 stars">
-					{#each [1, 2, 3, 4, 5] as star (star)}
-						<button
-							type="button"
-							class="diary-rating-star"
-							class:filled={star <= rating}
-							aria-label="{star} star{star === 1 ? '' : 's'}"
-							aria-pressed={star <= rating}
-							onclick={() => setRating(star)}
-						>
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="28"
-								height="28"
-								viewBox="0 0 24 24"
-								fill={star <= rating ? 'currentColor' : 'none'}
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
+				<fieldset class="diary-overlay-rating">
+					<legend>Your rating</legend>
+					<div class="diary-rating diary-rating-interactive" role="group" aria-label="Rate out of 5 stars">
+						{#each [1, 2, 3, 4, 5] as star (star)}
+							<button
+								type="button"
+								class="diary-rating-star"
+								class:filled={star <= rating}
+								aria-label="{star} star{star === 1 ? '' : 's'}"
+								aria-pressed={star <= rating}
+								onclick={() => setRating(star)}
 							>
-								<polygon
-									points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-								/>
-							</svg>
-						</button>
-					{/each}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="28"
+									height="28"
+									viewBox="0 0 24 24"
+									fill={star <= rating ? 'currentColor' : 'none'}
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<polygon
+										points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+									/>
+								</svg>
+							</button>
+						{/each}
+					</div>
+				</fieldset>
+
+				<label class="diary-overlay-field">
+					Comment
+					<textarea name="comment" rows="4" bind:value={comment} placeholder="How was it?"></textarea>
+				</label>
+
+				<label class="diary-overlay-field">
+					Date watched
+					<input type="date" name="watchedAt" bind:value={watchedAt} />
+				</label>
+
+				<div class="diary-overlay-actions">
+					<button type="button" class="btn-secondary" onclick={onClose}>Cancel</button>
+					<button type="submit" class="btn-primary" disabled={saving}>
+						{saving ? 'Saving…' : 'Save'}
+					</button>
 				</div>
-			</fieldset>
-
-			<label class="diary-overlay-field">
-				Comment
-				<textarea name="comment" rows="4" bind:value={comment} placeholder="How was it?"></textarea>
-			</label>
-
-			<label class="diary-overlay-field">
-				Date watched
-				<input type="date" name="watchedAt" bind:value={watchedAt} />
-			</label>
-
-			<div class="diary-overlay-actions">
-				<button type="button" class="btn-secondary" onclick={onClose}>Cancel</button>
-				<button type="submit" class="btn-primary" disabled={saving}>
-					{saving ? 'Saving…' : 'Save'}
-				</button>
-			</div>
-		</form>
+			</form>
+		{/if}
 	</div>
 </div>
